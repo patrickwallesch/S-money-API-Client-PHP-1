@@ -3,6 +3,7 @@
 namespace Smoney\Smoney\Client;
 
 use Smoney\Smoney\Client\AbstractClient;
+use Smoney\Smoney\Facade\UserCardRegistrationFacade;
 use Smoney\Smoney\Facade\UserFacade;
 
 /**
@@ -88,5 +89,19 @@ class UserClient extends AbstractClient
         $user->status = 5;
 
         return $this->update($user);
+    }
+
+    /**
+     * @param UserCardRegistrationFacade $userCardRegistrationFacade
+     * @param $appUserId
+     * @return array|\JMS\Serializer\scalar|object
+     */
+    public function registerCard(UserCardRegistrationFacade $userCardRegistrationFacade, $appUserId)
+    {
+        $uri = "users/{$appUserId}/cards/registrations";
+        $body = $this->serializer->serialize($userCardRegistrationFacade, 'json');
+        $res = $this->action('POST', $uri, ['body'=>$body]);
+
+        return $this->serializer->deserialize($res, 'Smoney\Smoney\Facade\CardPaymentFacade', 'json');
     }
 }
